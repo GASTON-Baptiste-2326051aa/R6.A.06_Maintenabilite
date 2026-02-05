@@ -1,0 +1,17 @@
+name: PHP Linting
+
+on:
+    push:
+        branches: ["**"]
+    pull_request:
+
+jobs:
+    phplint:
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: PHP Lint
+                uses: michaelw90/PHP-Lint@2.1.0
