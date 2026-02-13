@@ -1,0 +1,27 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+    phpunit:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.3
+                  tools: composer
+                  extensions: pdo_sqlite,sqlite3
+
+            - run: composer install --no-interaction --prefer-dist --no-scripts
+
+            - name: Create .env for CI
+              run: |
+                  echo "APP_ENV=test" >> .env
+                  echo "APP_SECRET=ci" >> .env
+                  echo 'DATABASE_URL="sqlite:///%kernel.project_dir%/var/test.db"' >> .env
+
+            - run: php bin/console doctrine:schema:create --env=test
+            - run: php bin/phpunit
