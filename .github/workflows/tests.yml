@@ -1,0 +1,22 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+    phpunit:
+        runs-on: ubuntu-latest
+        env:
+            APP_ENV: test
+            DATABASE_URL: "sqlite:///%kernel.project_dir%/var/test.db"
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.3
+                  tools: composer
+                  extensions: pdo_sqlite
+
+            - run: composer install --no-interaction --prefer-dist
+            - run: php bin/console doctrine:schema:create --env=test
+            - run: php bin/phpunit
